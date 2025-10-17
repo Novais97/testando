@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en-CA">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Thank You!</title>
+    <style>
+      :root {
+        --primary: #1f6feb;
+        --background: linear-gradient(135deg, #0d1117, #1f6feb);
+        --surface: rgba(13, 17, 23, 0.55);
+        --text: #f8fafc;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--background);
+        color: var(--text);
+        font-family: "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+        position: relative;
+        overflow: hidden;
+      }
+
+      body::before {
+        content: "";
+        position: absolute;
+        width: 460px;
+        height: 460px;
+        border-radius: 50%;
+        background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.18), transparent 65%);
+        top: -120px;
+        right: -120px;
+        filter: blur(0.5px);
+        pointer-events: none;
+        animation: drift 18s ease-in-out infinite alternate;
+      }
+
+      main {
+        max-width: 520px;
+        width: 90%;
+        padding: 2.75rem 2.4rem;
+        border-radius: 24px;
+        background: var(--surface);
+        box-shadow: 0 28px 60px rgba(10, 22, 53, 0.45);
+        text-align: center;
+        backdrop-filter: blur(14px);
+        opacity: 0;
+        transform: translateY(18px);
+        animation: fadeUp 0.8s ease forwards;
+        position: relative;
+        z-index: 1;
+      }
+
+      .icon {
+        width: 92px;
+        height: 92px;
+        margin: 0 auto 1.75rem;
+        display: grid;
+        place-items: center;
+        border-radius: 50%;
+        background: rgba(31, 111, 235, 0.2);
+        color: #fff;
+        animation: pulse 1.6s ease-in-out infinite;
+      }
+
+      .content > * {
+        opacity: 0;
+        transform: translateY(12px);
+        animation: fadeIn 0.7s ease forwards;
+      }
+
+      .content > *:nth-child(1) { animation-delay: 0.25s; }
+      .content > *:nth-child(2) { animation-delay: 0.35s; }
+      .content > *:nth-child(3) { animation-delay: 0.45s; }
+      .content > *:nth-child(4) { animation-delay: 0.55s; }
+      .content > *:nth-child(5) { animation-delay: 0.65s; }
+      .content > *:nth-child(6) { animation-delay: 0.75s; }
+
+      h1 {
+        margin: 0 0 0.75rem;
+        font-size: clamp(2.1rem, 4vw, 2.8rem);
+        letter-spacing: 0.03em;
+      }
+
+      .lead {
+        margin: 0 0 1.75rem;
+        font-size: 1.05rem;
+        line-height: 1.7;
+        color: rgba(248, 250, 252, 0.88);
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.6rem;
+        padding: 0.85rem 1.9rem;
+        border-radius: 999px;
+        border: none;
+        background: #fff;
+        color: #0d1117;
+        font-weight: 600;
+        text-decoration: none;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        box-shadow: 0 12px 28px rgba(15, 23, 42, 0.35);
+      }
+
+      .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 16px 36px rgba(15, 23, 42, 0.45);
+      }
+
+      .btn:focus-visible {
+        outline: 3px solid rgba(255, 255, 255, 0.75);
+        outline-offset: 3px;
+      }
+
+      .support-text {
+        margin: 1rem 0 1.5rem;
+        font-size: 0.97rem;
+        color: rgba(248, 250, 252, 0.76);
+      }
+
+      .social {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+      }
+
+      .social a {
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: #0d1117;
+        background: #fff;
+        text-decoration: none;
+        box-shadow: 0 10px 22px rgba(15, 23, 42, 0.3);
+        transition: transform 0.2s ease, box-shadow 0.2s ease, color 0.2s ease;
+      }
+
+      .social a:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 16px 32px rgba(15, 23, 42, 0.45);
+        color: var(--primary);
+      }
+
+      .social svg {
+        width: 18px;
+        height: 18px;
+      }
+
+      @keyframes fadeUp {
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes fadeIn {
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes pulse {
+        0%, 100% {
+          transform: scale(1);
+          box-shadow: 0 0 0 0 rgba(31, 111, 235, 0.5);
+        }
+        50% {
+          transform: scale(1.04);
+          box-shadow: 0 0 0 14px rgba(31, 111, 235, 0);
+        }
+      }
+
+      @keyframes drift {
+        to {
+          transform: translate(-30px, 30px) scale(1.08);
+        }
+      }
+
+      @media (max-width: 480px) {
+        main {
+          padding: 2.25rem 1.75rem;
+        }
+        .icon {
+          width: 82px;
+          height: 82px;
+        }
+      }
+
+      .timestamp {
+        margin-top: 1.5rem;
+        font-size: 0.95rem;
+        color: rgba(248, 250, 252, 0.7);
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <div class="icon" aria-hidden="true">
+        <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 6L9 17l-5-5" />
+        </svg>
+      </div>
+      <div class="content">
+        <h1>Thank You!</h1>
+        <p class="lead">Your message has been sent successfully. We will reach out shortly with the next steps.</p>
+        <a class="btn" href="index.html">Return to site</a>
+        <p class="support-text">We reply within 24 hours. Keep an eye on your inbox for our confirmation.</p>
+        <div class="social" aria-label="Social media links">
+          <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M13.5 22v-8h2.7l.4-3.2h-3.1V8.3c0-.9.3-1.5 1.6-1.5h1.6V4.1c-.3 0-1.3-.1-2.4-.1-2.4 0-4.1 1.4-4.1 4v2.3H7.8V14h2.9v8h2.8Z" />
+            </svg>
+          </a>
+          <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 7.3a4.7 4.7 0 1 0 0 9.4 4.7 4.7 0 0 0 0-9.4Zm0 7.7a3 3 0 1 1 0-6 3 3 0 0 1 0 6Zm6-7.9a1.1 1.1 0 1 1-2.2 0 1.1 1.1 0 0 1 2.2 0ZM20.8 8c0-2-.2-3.4-1-4.6A4.7 4.7 0 0 0 16.6 2c-1.2-.1-1.5-.1-4.6-.1-3.1 0-3.5 0-4.6.1a4.7 4.7 0 0 0-3.2 1.4A4.7 4.7 0 0 0 2 7.4C2 8.5 2 8.9 2 12c0 3.1 0 3.5.1 4.6a4.7 4.7 0 0 0 1.4 3.2A4.7 4.7 0 0 0 7.4 21c1.2.1 1.5.1 4.6.1 3.1 0 3.5 0 4.6-.1a4.7 4.7 0 0 0 3.2-1.4A4.7 4.7 0 0 0 22 16.6c.1-1.2.1-1.5.1-4.6 0-3.1 0-3.5-.1-4.6Zm-2 9.4a2.7 2.7 0 0 1-1.5 1.5c-1 .4-3.4.3-4.3.3-1 0-3.3.1-4.3-.3a2.7 2.7 0 0 1-1.5-1.5c-.4-1-.3-3.4-.3-4.3 0-1 0-3.3.3-4.3a2.7 2.7 0 0 1 1.5-1.5c1-.4 3.4-.3 4.3-.3 1 0 3.3 0 4.3.3a2.7 2.7 0 0 1 1.5 1.5c.4 1 .3 3.4.3 4.3 0 1 0 3.3-.3 4.3Z" />
+            </svg>
+          </a>
+          <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" aria-label="Twitter">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M19.9 7.3c.9-.5 1.5-1.3 1.8-2.2-.8.5-1.7.9-2.6 1A3.4 3.4 0 0 0 12.9 9a9.6 9.6 0 0 1-7-3.6 3.4 3.4 0 0 0 1.1 4.6c-.7 0-1.4-.2-2-.6 0 1.7 1.1 3.2 2.8 3.6-.5.2-1 .2-1.5.1a3.4 3.4 0 0 0 3.1 2.3A6.8 6.8 0 0 1 4 17.5a9.6 9.6 0 0 0 14.7-8.2v-.4c1-.6 1.5-1.3 2-2.2Z" />
+            </svg>
+          </a>
+        </div>
+        <p class="timestamp" id="submissionTimestamp" hidden>Submitted on <span></span></p>
+      </div>
+    </main>
+    <script>
+      (function () {
+        const target = document.getElementById('submissionTimestamp');
+        if (!target) return;
+        try {
+          const stored = sessionStorage.getItem('quoteSubmittedAt');
+          if (!stored) return;
+          const date = new Date(stored);
+          if (Number.isNaN(date.getTime())) return;
+          const formatted = new Intl.DateTimeFormat('en-CA', {
+            dateStyle: 'medium',
+            timeStyle: 'short'
+          }).format(date);
+          target.querySelector('span').textContent = formatted;
+          target.hidden = false;
+        } catch (err) {
+          console.warn('Unable to read submission timestamp.', err);
+        }
+      })();
+    </script>
+  </body>
+</html>

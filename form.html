@@ -1,0 +1,437 @@
+﻿<!doctype html>
+<html lang="en-CA">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Quote Request</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <style>
+      :root {
+        --bg-900:#201F1E;
+        --bg-800:#252423;
+        --surface-2:#2B2A29;
+        --surface-3:#323130;
+        --border:#3B3A39;
+        --divider:#3D3D3D;
+        --text:#FFFFFF;
+        --text-muted:#C8C6C4;
+        --text-subtle:#A19F9D;
+        --focus:#605E5C;
+        --shadow:0 8px 24px rgba(0,0,0,.35);
+        --radius:16px;
+      }
+      body {
+        font-family: system-ui,-apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, 'Helvetica Neue', Arial;
+        margin:0;
+        padding:0;
+        color:var(--text);
+        background:linear-gradient(180deg, var(--bg-900) 0%, var(--bg-800) 100%);
+        color-scheme: dark;
+      }
+      header {
+        background:linear-gradient(180deg, var(--bg-900) 0%, var(--bg-800) 100%);
+        color:var(--text);
+        border-bottom:1px solid var(--divider);
+      }
+      .topbar { max-width: 1200px; margin: 0 auto; display:flex; align-items:center; justify-content:space-between; gap:.75rem; padding:.75rem 1rem; }
+      .brand { font-weight:700; letter-spacing:.05em; color:var(--text); }
+      .home-btn { display:inline-flex; align-items:center; justify-content:center; gap:.4rem; padding:.5rem .9rem; border-radius:999px; background:var(--surface-2); color:var(--text); font-weight:700; text-decoration:none; border:1px solid var(--border); box-shadow:var(--shadow); transition: transform .2s ease, box-shadow .2s ease, background .2s ease, border-color .2s ease; white-space:nowrap; }
+      .home-btn:hover { transform: translateY(-1px); background:var(--surface-3); border-color:var(--divider); box-shadow:var(--shadow); }
+      .home-btn:active { transform: translateY(0); }
+      .home-btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+      .container { max-width:980px; margin:24px auto; padding:16px; background:var(--surface-2); border:1px solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow); }
+      h1 { margin:0 0 16px; font-size:1.6rem; color:var(--text); }
+      form { display:grid; gap:16px; }
+      .row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+      label { display:block; font-weight:600; margin-bottom:6px; color:var(--text); }
+      input[type="text"], input[type="tel"], textarea { width:100%; padding:10px 12px; border:1px solid var(--border); border-radius:12px; font-size:1rem; box-sizing:border-box; background:var(--surface-2); color:var(--text); transition:border-color .2s ease, background .2s ease, box-shadow .2s ease; }
+      input[type="text"]:focus-visible, input[type="tel"]:focus-visible, textarea:focus-visible { outline:2px solid var(--focus); outline-offset:2px; background:var(--surface-3); border-color:var(--divider); }
+      input[type="text"]::placeholder, input[type="tel"]::placeholder, textarea::placeholder { color:var(--text-subtle); }
+      input[type="file"] { width:100%; color:var(--text); }
+      input[type="file"]:focus-visible { outline:2px solid var(--focus); outline-offset:2px; }
+      input[type="file"]::file-selector-button { margin-right:12px; padding:8px 14px; border-radius:12px; border:1px solid var(--border); background:var(--surface-2); color:var(--text); transition:background .2s ease, border-color .2s ease; }
+      input[type="file"]::file-selector-button:hover { background:var(--surface-3); border-color:var(--divider); }
+      input[type="file"]::file-selector-button:focus-visible { outline:2px solid var(--focus); outline-offset:2px; }
+      textarea { min-height:120px; resize:vertical; }
+      input[type="range"] { accent-color:var(--focus); }
+      .muted { color:var(--text-muted); font-size:.9rem; }
+      .counter { text-align:right; font-size:.85rem; color:var(--text-subtle); }
+      .upload-box { border:1px solid var(--border); border-radius:var(--radius); padding:12px; background:var(--surface-2); box-shadow:var(--shadow); transition:background .2s ease, border-color .2s ease; }
+      .upload-box:hover { background:var(--surface-3); border-color:var(--divider); }
+      .upload-box:focus-within { outline:2px solid var(--focus); outline-offset:2px; background:var(--surface-3); border-color:var(--divider); }
+      .thumbs { display:grid; grid-template-columns:repeat(auto-fill, minmax(120px, 1fr)); gap:10px; margin-top:12px; }
+      .thumb { position:relative; border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; background:var(--surface-2); box-shadow:var(--shadow); transition:background .2s ease, border-color .2s ease; }
+      .thumb:hover, .thumb:focus-within { background:var(--surface-3); border-color:var(--divider); }
+      .thumb:focus-within { outline:2px solid var(--focus); outline-offset:2px; }
+      .thumb img { display:block; width:100%; height:100px; object-fit:cover; }
+      .thumb button.remove { position:absolute; top:6px; right:6px; width:26px; height:26px; border:1px solid var(--border); border-radius:50%; background:var(--surface-2); color:var(--text); font-weight:700; cursor:pointer; transition:background .2s ease, border-color .2s ease; }
+      .thumb button.remove:hover { background:var(--surface-3); border-color:var(--divider); }
+      .thumb button.remove:focus-visible { outline:2px solid var(--focus); outline-offset:2px; }
+      .map-wrap { border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; background:var(--surface-2); box-shadow:var(--shadow); transition:background .2s ease, border-color .2s ease; }
+      .map-wrap:focus-within { outline:2px solid var(--focus); outline-offset:2px; background:var(--surface-3); border-color:var(--divider); }
+      #map { height:360px; }
+      .map-toolbar { display:flex; flex-wrap:wrap; gap:8px; align-items:center; padding:10px; border-top:1px solid var(--divider); background:var(--surface-2); }
+      .map-toolbar .grow { flex:1; }
+      .map-toolbar input[type="text"] { height:38px; }
+      .btn { height:38px; padding:0 14px; border:1px solid var(--border); border-radius:12px; background:var(--surface-2); color:var(--text); cursor:pointer; transition:background .2s ease, border-color .2s ease, box-shadow .2s ease; box-shadow:var(--shadow); }
+      .btn:hover { background:var(--surface-3); border-color:var(--divider); }
+      .btn:focus-visible { outline:2px solid var(--focus); outline-offset:2px; }
+      .btn.primary { background:var(--surface-3); border-color:var(--divider); color:var(--text); }
+      .btn.ghost { background:var(--surface-2); border-color:var(--border); }
+      .btn:disabled { opacity:.6; cursor:default; background:var(--surface-2); border-color:var(--border); color:var(--text-muted); box-shadow:none; }
+      .radius { display:flex; align-items:center; gap:12px; }
+      .status { font-size:.95rem; color:var(--text-muted); }
+      .status.success,
+      .status.error { color:var(--text); }
+      hr, .divider { background-color:var(--divider); height:1px; border:none; }
+      @media (max-width:720px){ .row{ grid-template-columns:1fr; } #map{ height:300px; } }
+
+      /* Back-to-top button */
+      .back-to-top { position: fixed; bottom: 1.75rem; right: 1.75rem; width: 58px; height: 58px; border: 1px solid var(--border); border-radius: 50%; background: var(--surface-2); color:var(--text); display:flex; align-items:center; justify-content:center; box-shadow:var(--shadow); z-index:60; opacity:0; visibility:hidden; pointer-events:none; transform: translateY(8px); transition: opacity 0.25s ease, transform 0.25s ease, visibility 0.25s ease, box-shadow 0.25s ease, background 0.25s ease, border-color 0.25s ease; }
+      .back-to-top--visible { opacity: 1; visibility: visible; pointer-events: auto; transform: translateY(0); }
+      .back-to-top:hover { background:var(--surface-3); border-color:var(--divider); }
+      .back-to-top:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+      .back-to-top svg { width: 28px; height: 28px; }
+      .back-to-top__hammer { transform-origin: 50% 50%; animation: hammer-hit 5s cubic-bezier(0.65, 0, 0.35, 1) infinite; }
+      @keyframes hammer-hit {
+        0% { transform: rotate(0deg); }
+        8% { transform: rotate(-45deg); }
+        14% { transform: rotate(0deg); }
+        22% { transform: rotate(-40deg); }
+        28%, 100% { transform: rotate(0deg); }
+      }
+
+      .loading-overlay { position: fixed; inset: 0; display:flex; align-items:center; justify-content:center; background: rgba(32,31,30,0.82); opacity: 0; pointer-events: none; transition: opacity 0.3s ease; z-index: 200; }
+      .loading-overlay.is-visible { opacity: 1; pointer-events: auto; }
+      .loading-overlay__spinner { width: 68px; height: 68px; border-radius: 50%; border: 6px solid rgba(255,255,255,0.18); border-top-color: var(--text); animation: loading-spin 1s linear infinite; }
+      @keyframes loading-spin { to { transform: rotate(360deg); } }
+
+      @media (prefers-reduced-motion: reduce) {
+        .back-to-top { transition: none; }
+        .back-to-top__hammer { animation: none; }
+        .loading-overlay { transition: none; }
+        .loading-overlay__spinner { animation: none; }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="topbar">
+        <div class="brand">NCR Construction & Renovation” Quote</div>
+        <a href="index.html" class="home-btn" aria-label="Go to Home" title="Home">Home</a>
+      </div>
+    </header>
+    <div class="container">
+      <h1>Quote Request</h1>
+      <p class="muted">Please complete all required fields. Selecting a region on the map is recommended to help estimate faster. Address is optional.</p>
+
+      <form id="quoteForm" action="https://formsubmit.co/servicesncrnovais@gmail.com" method="POST" enctype="multipart/form-data" novalidate>
+        <div class="row">
+          <div>
+            <label for="name">Full name</label>
+            <input id="name" name="name" type="text" required placeholder="Your name" />
+          </div>
+          <div>
+            <label for="phone">Phone</label>
+            <input id="phone" name="phone" type="tel" required placeholder="(###) ###-####" pattern="^[+()\d\s-]{8,20}$" />
+          </div>
+        </div>
+
+        <div>
+          <label for="jobTitle">What is the job?</label>
+          <input id="jobTitle" name="jobTitle" type="text" required placeholder="e.g., Exterior house painting" />
+        </div>
+
+        <div>
+          <label for="details">Job details (up to 500 characters)</label>
+          <textarea id="details" name="details" maxlength="500" required placeholder="Describe materials, dimensions, timelines, special notes, etc."></textarea>
+          <div class="counter"><span id="detailsCount">0</span>/500</div>
+        </div>
+
+        <div class="upload-box">
+          <label for="images">Images (optional)</label>
+          <input id="images" name="images" type="file" accept="image/*" multiple />
+          <div class="muted">Preview below. Click to remove any image.</div>
+          <div id="thumbs" class="thumbs"></div>
+        </div>
+
+        <div>
+          <label for="addressText">Address (optional)</label>
+          <input id="addressText" name="addressText" type="text" placeholder="Street address, city, province/state" />
+          <div class="muted">Optional: you can leave this blank if you prefer not to share your exact address. Selecting a region on the map below is sufficient.</div>
+        </div>
+
+        <div class="map-wrap">
+          <div id="map"></div>
+          <div class="map-toolbar">
+            <button type="button" id="btnGps" class="btn ghost">Use my location (GPS)</button>
+            <div class="radius">
+              <label for="radius">Proximity:</label>
+              <input id="radius" type="range" min="100" max="50000" step="100" value="1000" />
+              <span id="radiusLabel" class="muted">1000 m</span>
+            </div>
+            <input id="searchAddress" class="grow" type="text" placeholder="Search the map for an address" />
+            <button type="button" id="btnSearch" class="btn">Search</button>
+          </div>
+        </div>
+
+        <div class="row">
+          <div>
+            <label for="city">City</label>
+            <input id="city" name="city" type="text" placeholder="Detected from map" />
+          </div>
+          <div>
+            <label for="area">Neighbourhood/Area</label>
+            <input id="area" name="area" type="text" placeholder="Detected from map" />
+          </div>
+        </div>
+        <input id="lat" name="lat" type="hidden" />
+        <input id="lng" name="lng" type="hidden" />
+        <input id="radiusMeters" name="radiusMeters" type="hidden" value="1000" />
+        <input id="_next" name="_next" type="hidden" />
+        <input id="_subject" name="_subject" type="hidden" />
+
+        <div>
+          <button id="submitBtn" type="submit" class="btn primary">Send quote request</button>
+          <span id="formStatus" class="status" aria-live="polite"></span>
+        </div>
+      </form>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script>
+      (function(){
+        const details = document.getElementById('details');
+        const detailsCount = document.getElementById('detailsCount');
+        const imagesInput = document.getElementById('images');
+        const thumbs = document.getElementById('thumbs');
+        const radiusRange = document.getElementById('radius');
+        const radiusLabel = document.getElementById('radiusLabel');
+        const addressText = document.getElementById('addressText');
+        const searchAddress = document.getElementById('searchAddress');
+        const btnSearch = document.getElementById('btnSearch');
+        const btnGps = document.getElementById('btnGps');
+        const cityInput = document.getElementById('city');
+        const areaInput = document.getElementById('area');
+        const latInput = document.getElementById('lat');
+        const lngInput = document.getElementById('lng');
+        const radiusMetersInput = document.getElementById('radiusMeters');
+        const form = document.getElementById('quoteForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const formStatus = document.getElementById('formStatus');
+
+        let loadingOverlayEl = null;
+        const ensureLoadingOverlay = () => {
+          if (loadingOverlayEl) return loadingOverlayEl;
+          const overlay = document.createElement('div');
+          overlay.id = 'quote-loading-overlay';
+          overlay.className = 'loading-overlay';
+          const spinner = document.createElement('div');
+          spinner.className = 'loading-overlay__spinner';
+          overlay.appendChild(spinner);
+          loadingOverlayEl = overlay;
+          return overlay;
+        };
+
+        const showLoadingOverlay = () => {
+          const overlay = ensureLoadingOverlay();
+          if (!overlay.isConnected) {
+            document.body.appendChild(overlay);
+          }
+          requestAnimationFrame(() => overlay.classList.add('is-visible'));
+        };
+
+        const hideLoadingOverlay = () => {
+          if (!loadingOverlayEl) return;
+          loadingOverlayEl.classList.remove('is-visible');
+        };
+
+        // Counter
+        const updateCounter = () => { detailsCount.textContent = details.value.length; };
+        details.addEventListener('input', updateCounter); updateCounter();
+
+        // Image preview and removal
+        let selectedFiles = [];
+        const MAX_IMAGES = 12;
+        function refreshInputFiles(){ const dt = new DataTransfer(); selectedFiles.forEach(f => dt.items.add(f)); imagesInput.files = dt.files; }
+        function renderThumbs(){
+          thumbs.innerHTML = '';
+          selectedFiles.forEach((file, idx) => {
+            const url = URL.createObjectURL(file);
+            const item = document.createElement('div'); item.className = 'thumb';
+            const img = document.createElement('img'); img.src = url; img.alt = file.name;
+            const btn = document.createElement('button'); btn.type = 'button'; btn.className = 'remove'; btn.title = 'Remove image'; btn.textContent = 'X';
+            btn.addEventListener('click', () => { selectedFiles.splice(idx,1); refreshInputFiles(); renderThumbs(); URL.revokeObjectURL(url); });
+            item.appendChild(img); item.appendChild(btn); thumbs.appendChild(item);
+          });
+        }
+        imagesInput.addEventListener('change', () => { const files = Array.from(imagesInput.files||[]); for(const f of files){ if(!f.type.startsWith('image/')) continue; if(selectedFiles.length>=MAX_IMAGES) break; selectedFiles.push(f); } refreshInputFiles(); renderThumbs(); imagesInput.value=''; });
+
+        // Leaflet map
+        const map = L.map('map');
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom:19, attribution:'&copy; OpenStreetMap contributors' }).addTo(map);
+        map.setView([56.1304, -106.3468], 4);
+        let centerMarker = null; let regionCircle = null;
+        function setRegion(lat,lng){ const radius = Number(radiusRange.value); radiusMetersInput.value=String(radius); latInput.value=String(lat); lngInput.value=String(lng);
+          if(!centerMarker){ centerMarker = L.marker([lat,lng], { draggable:true }).addTo(map); centerMarker.on('dragend',()=>{ const p=centerMarker.getLatLng(); setRegion(p.lat,p.lng); updateCityArea(p.lat,p.lng); }); }
+          else { centerMarker.setLatLng([lat,lng]); }
+          if(!regionCircle){ regionCircle = L.circle([lat,lng], { radius, color:'#0d6efd', fillOpacity:0.1 }).addTo(map); }
+          else { regionCircle.setLatLng([lat,lng]); regionCircle.setRadius(radius); }
+        }
+        function hasRegionSelected(){ return !!(centerMarker && regionCircle); }
+        function formatRadiusLabel(v){ const n=Number(v); return n>=1000 ? (n/1000).toFixed(n%1000===0?0:1)+' km' : n+' m'; }
+        radiusLabel.textContent = formatRadiusLabel(radiusRange.value);
+        radiusRange.addEventListener('input', ()=>{ radiusLabel.textContent = formatRadiusLabel(radiusRange.value); if(hasRegionSelected()) { const p=centerMarker.getLatLng(); setRegion(p.lat,p.lng);} });
+        map.on('click', (e)=>{ setRegion(e.latlng.lat,e.latlng.lng); map.flyTo([e.latlng.lat,e.latlng.lng], Math.max(map.getZoom(),14)); updateCityArea(e.latlng.lat,e.latlng.lng); });
+        btnGps.addEventListener('click', ()=>{ if(!navigator.geolocation){ alert('Geolocation is not supported by your browser.'); return; } btnGps.disabled=true; navigator.geolocation.getCurrentPosition((pos)=>{ const {latitude,longitude}=pos.coords; setRegion(latitude,longitude); map.flyTo([latitude,longitude],15); updateCityArea(latitude,longitude); btnGps.disabled=false; },()=>{ alert('Could not get your location.'); btnGps.disabled=false; },{enableHighAccuracy:true, maximumAge:30000, timeout:15000}); });
+
+        async function geocodeAddress(q){ const url=new URL('https://nominatim.openstreetmap.org/search'); url.searchParams.set('format','json'); url.searchParams.set('limit','1'); url.searchParams.set('q',q); url.searchParams.set('countrycodes','ca'); url.searchParams.set('email','novais.marcos.usa@gmail.com'); const res = await fetch(url.toString(), { headers:{Accept:'application/json'} }); if(!res.ok) throw new Error('Failed to search address'); const data = await res.json(); if(!data||!data.length) return null; return { lat: parseFloat(data[0].lat), lon: parseFloat(data[0].lon), display: data[0].display_name } }
+        async function reverseGeocode(lat,lon){ const url=new URL('https://nominatim.openstreetmap.org/reverse'); url.searchParams.set('format','json'); url.searchParams.set('lat',String(lat)); url.searchParams.set('lon',String(lon)); url.searchParams.set('zoom','15'); url.searchParams.set('addressdetails','1'); url.searchParams.set('email','novais.marcos.usa@gmail.com'); const res = await fetch(url.toString(), { headers:{Accept:'application/json'} }); if(!res.ok) return null; const data = await res.json(); return data && data.address ? data.address : null }
+        async function updateCityArea(lat,lon){ try{ const addr = await reverseGeocode(lat,lon); if(!addr) return; const cidade = addr.city || addr.town || addr.village || addr.municipality || ''; const bairro = addr.suburb || addr.neighbourhood || addr.city_district || ''; if(cidade && !cityInput.value) cityInput.value=cidade; if(bairro && !areaInput.value) areaInput.value=bairro; } catch{} }
+        btnSearch.addEventListener('click', async ()=>{ const q=searchAddress.value.trim(); if(!q) return; btnSearch.disabled=true; try{ const res = await geocodeAddress(q); if(res){ setRegion(res.lat,res.lon); map.flyTo([res.lat,res.lon],15); addressText.value=res.display; updateCityArea(res.lat,res.lon); } else { alert('Address not found.'); } } catch{ alert('Failed to search for address.'); } finally{ btnSearch.disabled=false; } });
+
+        // Submit
+        form.addEventListener('submit', (e)=>{
+          e.preventDefault();
+          formStatus.textContent = '';
+          formStatus.className = 'status';
+
+          if (form._loadingDelayTimer) {
+            clearTimeout(form._loadingDelayTimer);
+            form._loadingDelayTimer = null;
+          }
+
+          delete form.dataset.pendingSubmission;
+          delete form.dataset.submitting;
+
+          const requiredIds=['name','phone','jobTitle','details'];
+          for(const id of requiredIds){
+            const el=document.getElementById(id);
+            if(!el.value.trim()){
+              el.focus();
+              formStatus.textContent='Preencha todos os campos obrigatórios.';
+              formStatus.className='status error';
+              return;
+            }
+          }
+
+          const nameVal=document.getElementById('name').value.trim();
+          const jobVal=document.getElementById('jobTitle').value.trim();
+          document.getElementById('_subject').value = `Quote: ${jobVal} - ${nameVal}`;
+          document.getElementById('_next').value = new URL('thank.html', window.location.href).href;
+
+          const originalText = submitBtn.dataset.originalText || submitBtn.textContent;
+          submitBtn.dataset.originalText = originalText;
+          submitBtn.disabled = true;
+          submitBtn.textContent = 'Preparando...';
+          formStatus.textContent = 'Preparando envio...';
+          formStatus.className = 'status';
+
+          showLoadingOverlay();
+
+          let continueRequested = false;
+          let loadingDelayCompleted = false;
+          let hasFinalized = false;
+
+          const clearLoadingDelay = () => {
+            if (form._loadingDelayTimer) {
+              clearTimeout(form._loadingDelayTimer);
+              form._loadingDelayTimer = null;
+            }
+          };
+
+          const finalizeSubmission = () => {
+            if (hasFinalized || !continueRequested || !loadingDelayCompleted) return;
+            hasFinalized = true;
+            clearLoadingDelay();
+            delete form.dataset.pendingSubmission;
+            form.dataset.submitting = 'true';
+            hideLoadingOverlay();
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Redirecionando...';
+            formStatus.textContent = 'Redirecionando...';
+            formStatus.className = 'status';
+            delete form._continueSubmission;
+            delete form._resetSubmission;
+            try {
+              sessionStorage.setItem('quoteSubmittedAt', new Date().toISOString());
+            } catch (err) {
+              console.warn('Unable to persist submission timestamp.', err);
+            }
+            window.location.href = './thank.html';
+          };
+
+          const requestContinue = () => {
+            if (hasFinalized) return;
+            continueRequested = true;
+            finalizeSubmission();
+          };
+
+          const resetSubmission = (message = '', isError = false) => {
+            hasFinalized = false;
+            continueRequested = false;
+            loadingDelayCompleted = false;
+            clearLoadingDelay();
+            delete form.dataset.pendingSubmission;
+            delete form.dataset.submitting;
+            hideLoadingOverlay();
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalText;
+            formStatus.textContent = message || '';
+            formStatus.className = message ? `status ${isError ? 'error' : 'success'}` : 'status';
+            form._continueSubmission = requestContinue;
+            form._resetSubmission = resetSubmission;
+          };
+
+          form.dataset.pendingSubmission = 'true';
+          form._continueSubmission = requestContinue;
+          form._resetSubmission = resetSubmission;
+
+          const beforeSubmitEvent = new CustomEvent('quote:beforeSubmit', {
+            bubbles: true,
+            cancelable: true,
+            detail: {
+              form,
+              continueSubmission: requestContinue,
+              resetSubmission,
+              getFormData: () => new FormData(form),
+              showLoadingOverlay,
+              hideLoadingOverlay
+            }
+          });
+
+          const autoContinue = form.dispatchEvent(beforeSubmitEvent);
+
+          form._loadingDelayTimer = window.setTimeout(() => {
+            loadingDelayCompleted = true;
+            finalizeSubmission();
+          }, 2400);
+
+          if (autoContinue) {
+            requestContinue();
+          }
+        });
+      })();
+    </script>
+    <button id="backToTop" class="back-to-top" type="button" aria-label="Voltar ao topo" title="Voltar ao topo">
+      <svg class="back-to-top__hammer" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="28" height="28" aria-hidden="true" focusable="false">
+        <path fill="#fff" d="M400-120q-17 0-28.5-11.5T360-160v-480H160q0-83 58.5-141.5T360-840h240v120l120-120h80v320h-80L600-640v480q0 17-11.5 28.5T560-120H400Zm40-80h80v-240h-80v240Zm0-320h80v-240H360q-26 0-49 10.5T271-720h169v200Zm40 40Z"/>
+      </svg>
+    </button>
+    <script>
+      (function(){
+        const btn = document.getElementById('backToTop');
+        if (!btn) return;
+        const toggle = () => {
+          const show = window.scrollY > 200;
+          btn.classList.toggle('back-to-top--visible', show);
+        };
+        window.addEventListener('scroll', toggle, { passive: true });
+        window.addEventListener('load', toggle);
+        toggle();
+        btn.addEventListener('click', (event)=>{ event.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); });
+      })();
+    </script>
+  </body>
+  </html>
+
